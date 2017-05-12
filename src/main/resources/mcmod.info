@@ -1,0 +1,16 @@
+[
+{
+  "modid": "villagechecker",
+  "name": "VillageChecker",
+  "description": "to study the village",
+  "version": "${VERSION}",
+  "mcversion": "1.8.4",
+  "url": "",
+  "updateUrl": "",
+  "authors": ["samuihuyu"],
+  "credits": "",
+  "logoFile": "",
+  "screenshots": [],
+  "dependencies": []
+}
+]

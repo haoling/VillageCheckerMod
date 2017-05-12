@@ -1,0 +1,10 @@
+
+key.VillageCheckerActive=村の表示/非表示
+key.VillageCheckerSort=村リストのソート方法の変更
+
+dc.VillageChecker1=村を表示中です、８ブロック以内には
+dc.VillageChecker2=個の村があります
+dc.VillageChecker3=オプションキーで村をソートしてリスト表示します
+dc.VillageChecker4=村を近い順でソートしたリストです
+dc.VillageChecker5=村を遠い順でソートしたリストです
+dc.VillageChecker6=村をドアの数でソートしたリストです
