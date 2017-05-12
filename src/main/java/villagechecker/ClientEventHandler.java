@@ -6,10 +6,11 @@ import java.util.Random;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.WorldRenderer;
+import net.minecraft.client.renderer.VertexBuffer;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.client.settings.KeyBinding;
-import net.minecraft.util.StatCollector;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 
@@ -40,7 +41,7 @@ public class ClientEventHandler
 
 	@SubscribeEvent
 	public void resetVillageData(EntityJoinWorldEvent event){//次元移動やリログ等でリセット
-		if(event.entity == mc.thePlayer){
+		if(event.getEntity() == mc.thePlayer){
 			ClientProxy.VillageData.clear();
 			ClientProxy.show = false;
 		}
@@ -98,16 +99,13 @@ public class ClientEventHandler
 			else break;
 		}
 
-		String s = StatCollector.translateToLocal("dc.VillageChecker1");
-
-		mc.fontRendererObj.drawStringWithShadow(StatCollector.translateToLocal("dc.VillageChecker1")+nearVillageCount+StatCollector.translateToLocal("dc.VillageChecker2"), 10, 10, -1);
+		mc.fontRendererObj.drawStringWithShadow(I18n.format("dc.VillageChecker1")+nearVillageCount+I18n.format("dc.VillageChecker2"), 10, 10, -1);
 
 		if(mode == ClientProxy.mode.none){
-			mc.fontRendererObj.drawStringWithShadow(StatCollector.translateToLocal("dc.VillageChecker3"), 10, 20, -1);
-			return;
+			mc.fontRendererObj.drawStringWithShadow(I18n.format("dc.VillageChecker3"), 10, 20, -1);
 		}
 		else if(mode == ClientProxy.mode.near){
-			mc.fontRendererObj.drawStringWithShadow(StatCollector.translateToLocal("dc.VillageChecker4"), 10, 20, -1);
+			mc.fontRendererObj.drawStringWithShadow(I18n.format("dc.VillageChecker4"), 10, 20, -1);
 			for (int i = 0;i<villageDatas.length;i++) {
 				VillageData villageData = villageDatas[i];
 				mc.fontRendererObj.drawStringWithShadow("[" + i + "]" + "[X:" + villageData.posX + "][Y:" + villageData.posY + "][Z:" + villageData.posZ + "][D:" + villageData.numDoors + "][G:" + villageData.numIronGolems + "][R:" + villageData.villageRadius + "]", 10, 30 + i * 10, -1);
@@ -115,7 +113,7 @@ public class ClientEventHandler
 			}
 		} else if(mode == ClientProxy.mode.far){
 			Arrays.sort(villageDatas,new VillageFarComparator(mc.thePlayer));
-			mc.fontRendererObj.drawStringWithShadow(StatCollector.translateToLocal("dc.VillageChecker5"), 10, 20, -1);
+			mc.fontRendererObj.drawStringWithShadow(I18n.format("dc.VillageChecker5"), 10, 20, -1);
 			for (int i = 0;i<villageDatas.length;i++) {
 				VillageData villageData = villageDatas[i];
 				mc.fontRendererObj.drawStringWithShadow("["+i+"]"+"[X:"+villageData.posX+"][Y:"+villageData.posY+"][Z:"+villageData.posZ+"][D:"+villageData.numDoors+"][G:"+villageData.numIronGolems+"][R:"+villageData.villageRadius+"]", 10, 30+i*10, -1);
@@ -123,7 +121,7 @@ public class ClientEventHandler
 			}
 		} else if(mode == ClientProxy.mode.door){
 			Arrays.sort(villageDatas,new VillageDoorComparator());
-			mc.fontRendererObj.drawStringWithShadow(StatCollector.translateToLocal("dc.VillageChecker6"), 10, 20, -1);
+			mc.fontRendererObj.drawStringWithShadow(I18n.format("dc.VillageChecker6"), 10, 20, -1);
 			for (int i = 0;i<villageDatas.length;i++) {
 				VillageData villageData = villageDatas[i];
 				mc.fontRendererObj.drawStringWithShadow("["+i+"]"+"[X:"+villageData.posX+"][Y:"+villageData.posY+"][Z:"+villageData.posZ+"][D:"+villageData.numDoors+"][G:"+villageData.numIronGolems+"][R:"+villageData.villageRadius+"]", 10, 30+i*10, -1);
@@ -138,7 +136,7 @@ public class ClientEventHandler
 			GL11.glPushMatrix();
 
 			Tessellator tessellator = Tessellator.getInstance();
-			WorldRenderer renderer = tessellator.getWorldRenderer();
+            VertexBuffer renderer = tessellator.getBuffer();
 
 			{//村の中心を描画
 				GL11.glDisable(GL11.GL_TEXTURE_2D);
@@ -165,42 +163,42 @@ public class ClientEventHandler
 					GL11.glColor4d(rnd.nextInt(100) / 100.0D, rnd.nextInt(100) / 100.0D, rnd.nextInt(100) / 100.0D, 1);
 
 					{//村の中心
-						renderer.startDrawingQuads();
+                        renderer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION);
 						//上
-						renderer.addVertex(b, b, b);
-						renderer.addVertex(a, b, b);
-						renderer.addVertex(a, b, a);
-						renderer.addVertex(b, b, a);
+                        renderer.pos(b, b, b).endVertex();
+						renderer.pos(a, b, b).endVertex();
+						renderer.pos(a, b, a).endVertex();
+						renderer.pos(b, b, a).endVertex();
 
 						//下
-						renderer.addVertex(b, a, b);
-						renderer.addVertex(a, a, b);
-						renderer.addVertex(a, a, a);
-						renderer.addVertex(b, a, a);
+						renderer.pos(b, a, b).endVertex();
+						renderer.pos(a, a, b).endVertex();
+						renderer.pos(a, a, a).endVertex();
+						renderer.pos(b, a, a).endVertex();
 
 						//左
-						renderer.addVertex(a, b, b);
-						renderer.addVertex(a, b, a);
-						renderer.addVertex(a, a, a);
-						renderer.addVertex(a, a, b);
+						renderer.pos(a, b, b).endVertex();
+						renderer.pos(a, b, a).endVertex();
+						renderer.pos(a, a, a).endVertex();
+						renderer.pos(a, a, b).endVertex();
 
 						//右
-						renderer.addVertex(b, b, b);
-						renderer.addVertex(b, b, a);
-						renderer.addVertex(b, a, a);
-						renderer.addVertex(b, a, b);
+						renderer.pos(b, b, b).endVertex();
+						renderer.pos(b, b, a).endVertex();
+						renderer.pos(b, a, a).endVertex();
+						renderer.pos(b, a, b).endVertex();
 
 						//左
-						renderer.addVertex(b, b, a);
-						renderer.addVertex(a, b, a);
-						renderer.addVertex(a, a, a);
-						renderer.addVertex(b, a, a);
+						renderer.pos(b, b, a).endVertex();
+						renderer.pos(a, b, a).endVertex();
+						renderer.pos(a, a, a).endVertex();
+						renderer.pos(b, a, a).endVertex();
 
 						//右
-						renderer.addVertex(b, b, b);
-						renderer.addVertex(a, b, b);
-						renderer.addVertex(a, a, b);
-						renderer.addVertex(b, a, b);
+						renderer.pos(b, b, b).endVertex();
+						renderer.pos(a, b, b).endVertex();
+						renderer.pos(a, a, b).endVertex();
+						renderer.pos(b, a, b).endVertex();
 
 						tessellator.draw();
 					}
@@ -208,20 +206,20 @@ public class ClientEventHandler
 					{//ゴーレム
 						GL11.glLineWidth(10);
 
-						renderer.startDrawing(3);
-						renderer.addVertex(7.8, 3, 7.8);
-						renderer.addVertex(-7.8, 3, 7.8);
-						renderer.addVertex(-7.8, 3, -7.8);
-						renderer.addVertex(7.8, 3, -7.8);
-						renderer.addVertex(7.8, 3, 7.8);
+                        renderer.begin(GL11.GL_LINE_STRIP, DefaultVertexFormats.POSITION);
+						renderer.pos(7.8, 3, 7.8).endVertex();
+						renderer.pos(-7.8, 3, 7.8).endVertex();
+						renderer.pos(-7.8, 3, -7.8).endVertex();
+						renderer.pos(7.8, 3, -7.8).endVertex();
+						renderer.pos(7.8, 3, 7.8).endVertex();
 						tessellator.draw();
 
-						renderer.startDrawing(3);
-						renderer.addVertex(7.8, -3, 7.8);
-						renderer.addVertex(-7.8, -3, 7.8);
-						renderer.addVertex(-7.8, -3, -7.8);
-						renderer.addVertex(7.8, -3, -7.8);
-						renderer.addVertex(7.8, -3, 7.8);
+                        renderer.begin(GL11.GL_LINE_STRIP, DefaultVertexFormats.POSITION);
+						renderer.pos(7.8, -3, 7.8).endVertex();
+						renderer.pos(-7.8, -3, 7.8).endVertex();
+						renderer.pos(-7.8, -3, -7.8).endVertex();
+						renderer.pos(7.8, -3, -7.8).endVertex();
+						renderer.pos(7.8, -3, 7.8).endVertex();
 						tessellator.draw();
 					}
 
@@ -229,12 +227,12 @@ public class ClientEventHandler
 						double aaa = village.villageRadius;
 						GL11.glLineWidth(5);
 
-						renderer.startDrawing(3);
+                        renderer.begin(GL11.GL_LINE_STRIP, DefaultVertexFormats.POSITION);
 						for (int y = 0; y < 73; y++) {
 							double d0 = Math.cos((double) y * 5 * Math.PI / 180.0D) * aaa;
 							double d1 = Math.sin((double) y * 5 * Math.PI / 180.0D) * aaa;
 
-							renderer.addVertex(d0, 0, d1);
+							renderer.pos(d0, 0, d1).endVertex();
 						}
 
 						tessellator.draw();
@@ -242,9 +240,9 @@ public class ClientEventHandler
 
 					{//ドアへの線
 						for (VillageDataDoor door : village.doors) {
-							renderer.startDrawing(3);
-							renderer.addVertex(0.5, 0.5, 0.5);
-							renderer.addVertex(door.X - village.posX + 0.5, door.Y - village.posY + 1, door.Z - village.posZ + 0.5);
+                            renderer.begin(GL11.GL_LINE_STRIP, DefaultVertexFormats.POSITION);
+							renderer.pos(0.5, 0.5, 0.5).endVertex();
+							renderer.pos(door.X - village.posX + 0.5, door.Y - village.posY + 1, door.Z - village.posZ + 0.5).endVertex();
 							tessellator.draw();
 						}
 					}

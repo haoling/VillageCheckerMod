@@ -4,6 +4,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.server.MinecraftServer;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
+import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 
@@ -17,8 +18,8 @@ public class CommonTicEventHandler {
 
     @SubscribeEvent
     public void offVillageChecker(EntityJoinWorldEvent event) {//次元移動やリログ等でリセット
-        if (event.entity instanceof EntityPlayer) {
-            CommonProxy.enablePlayers.remove(event.entity);
+        if (event.getEntity() instanceof EntityPlayer) {
+            CommonProxy.enablePlayers.remove(event.getEntity());
         }
     }
 
@@ -31,9 +32,8 @@ public class CommonTicEventHandler {
             if (time == 0) {
                 time = 20;
 
-                Iterator it = MinecraftServer.getServer().getConfigurationManager().playerEntityList.iterator();
-                while (it.hasNext()) {
-                    EntityPlayer player = (EntityPlayer) it.next();
+                for (Object o : FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerList().getPlayerList()) {
+                    EntityPlayer player = (EntityPlayer) o;
                     if (CommonProxy.enablePlayers.contains(player)) {
                         ssVillageChecker.networkWrapper.sendTo(new VillageDataPacket(player.worldObj.villageCollectionObj.getVillageList()), (EntityPlayerMP) player);
                         lastPlayers.add(player);

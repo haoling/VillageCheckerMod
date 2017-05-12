@@ -3,7 +3,7 @@
   "modid": "villagechecker",
   "name": "VillageChecker",
   "description": "to study the village",
-  "version": "${VERSION}",
+  "version": "${version}",
   "mcversion": "1.8.4",
   "url": "",
   "updateUrl": "",
