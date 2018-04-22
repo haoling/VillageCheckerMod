@@ -8,7 +8,7 @@ import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import net.minecraftforge.fml.relauncher.Side;
 
-@Mod(modid= "ssVillageChecker", name="show village mod")
+@Mod(modid= "ssvillagevhecker", name="show village mod")
 public class ssVillageChecker {
     public static final SimpleNetworkWrapper networkWrapper = NetworkRegistry.INSTANCE.newSimpleChannel("ssVC");
 

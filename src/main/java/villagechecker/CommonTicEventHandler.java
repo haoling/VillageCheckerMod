@@ -32,10 +32,9 @@ public class CommonTicEventHandler {
             if (time == 0) {
                 time = 20;
 
-                for (Object o : FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerList().getPlayerList()) {
-                    EntityPlayer player = (EntityPlayer) o;
+                for (EntityPlayerMP player : FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerList().getPlayers()) {
                     if (CommonProxy.enablePlayers.contains(player)) {
-                        ssVillageChecker.networkWrapper.sendTo(new VillageDataPacket(player.worldObj.villageCollectionObj.getVillageList()), (EntityPlayerMP) player);
+                        ssVillageChecker.networkWrapper.sendTo(new VillageDataPacket(player.world.villageCollection.getVillageList()), player);
                         lastPlayers.add(player);
                     }
                 }

@@ -5,10 +5,11 @@ import java.util.Iterator;
 import java.util.Random;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.VertexBuffer;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import net.minecraft.client.renderer.vertex.VertexBuffer;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
@@ -41,7 +42,7 @@ public class ClientEventHandler
 
 	@SubscribeEvent
 	public void resetVillageData(EntityJoinWorldEvent event){//次元移動やリログ等でリセット
-		if(event.getEntity() == mc.thePlayer){
+		if(event.getEntity() == mc.player){
 			ClientProxy.VillageData.clear();
 			ClientProxy.show = false;
 		}
@@ -90,41 +91,41 @@ public class ClientEventHandler
 		if(mc.gameSettings.showDebugInfo) return;//F3画面を表示中は表示しない
 
 		VillageData[] villageDatas = ClientProxy.VillageData.toArray(new VillageData[ClientProxy.VillageData.size()]);
-		Arrays.sort(villageDatas, new VillageNearComparator(mc.thePlayer));
+		Arrays.sort(villageDatas, new VillageNearComparator(mc.player));
 
 		int nearVillageCount = 0;
 		for (VillageData villageData : villageDatas) {
-			if(mc.thePlayer.getDistance(villageData.posX,villageData.posY,villageData.posZ) < 8)
+			if(mc.player.getDistance(villageData.posX,villageData.posY,villageData.posZ) < 8)
 				nearVillageCount++;
 			else break;
 		}
 
-		mc.fontRendererObj.drawStringWithShadow(I18n.format("dc.VillageChecker1")+nearVillageCount+I18n.format("dc.VillageChecker2"), 10, 10, -1);
+		mc.fontRenderer.drawStringWithShadow(I18n.format("dc.VillageChecker1")+nearVillageCount+I18n.format("dc.VillageChecker2"), 10, 10, -1);
 
 		if(mode == ClientProxy.mode.none){
-			mc.fontRendererObj.drawStringWithShadow(I18n.format("dc.VillageChecker3"), 10, 20, -1);
+			mc.fontRenderer.drawStringWithShadow(I18n.format("dc.VillageChecker3"), 10, 20, -1);
 		}
 		else if(mode == ClientProxy.mode.near){
-			mc.fontRendererObj.drawStringWithShadow(I18n.format("dc.VillageChecker4"), 10, 20, -1);
+			mc.fontRenderer.drawStringWithShadow(I18n.format("dc.VillageChecker4"), 10, 20, -1);
 			for (int i = 0;i<villageDatas.length;i++) {
 				VillageData villageData = villageDatas[i];
-				mc.fontRendererObj.drawStringWithShadow("[" + i + "]" + "[X:" + villageData.posX + "][Y:" + villageData.posY + "][Z:" + villageData.posZ + "][D:" + villageData.numDoors + "][G:" + villageData.numIronGolems + "][R:" + villageData.villageRadius + "]", 10, 30 + i * 10, -1);
+				mc.fontRenderer.drawStringWithShadow("[" + i + "]" + "[X:" + villageData.posX + "][Y:" + villageData.posY + "][Z:" + villageData.posZ + "][D:" + villageData.numDoors + "][G:" + villageData.numIronGolems + "][R:" + villageData.villageRadius + "]", 10, 30 + i * 10, -1);
 				if(i > 12) break;//表示は12個まで
 			}
 		} else if(mode == ClientProxy.mode.far){
-			Arrays.sort(villageDatas,new VillageFarComparator(mc.thePlayer));
-			mc.fontRendererObj.drawStringWithShadow(I18n.format("dc.VillageChecker5"), 10, 20, -1);
+			Arrays.sort(villageDatas,new VillageFarComparator(mc.player));
+			mc.fontRenderer.drawStringWithShadow(I18n.format("dc.VillageChecker5"), 10, 20, -1);
 			for (int i = 0;i<villageDatas.length;i++) {
 				VillageData villageData = villageDatas[i];
-				mc.fontRendererObj.drawStringWithShadow("["+i+"]"+"[X:"+villageData.posX+"][Y:"+villageData.posY+"][Z:"+villageData.posZ+"][D:"+villageData.numDoors+"][G:"+villageData.numIronGolems+"][R:"+villageData.villageRadius+"]", 10, 30+i*10, -1);
+				mc.fontRenderer.drawStringWithShadow("["+i+"]"+"[X:"+villageData.posX+"][Y:"+villageData.posY+"][Z:"+villageData.posZ+"][D:"+villageData.numDoors+"][G:"+villageData.numIronGolems+"][R:"+villageData.villageRadius+"]", 10, 30+i*10, -1);
 				if(i > 12) break;//表示は12個まで
 			}
 		} else if(mode == ClientProxy.mode.door){
 			Arrays.sort(villageDatas,new VillageDoorComparator());
-			mc.fontRendererObj.drawStringWithShadow(I18n.format("dc.VillageChecker6"), 10, 20, -1);
+			mc.fontRenderer.drawStringWithShadow(I18n.format("dc.VillageChecker6"), 10, 20, -1);
 			for (int i = 0;i<villageDatas.length;i++) {
 				VillageData villageData = villageDatas[i];
-				mc.fontRendererObj.drawStringWithShadow("["+i+"]"+"[X:"+villageData.posX+"][Y:"+villageData.posY+"][Z:"+villageData.posZ+"][D:"+villageData.numDoors+"][G:"+villageData.numIronGolems+"][R:"+villageData.villageRadius+"]", 10, 30+i*10, -1);
+				mc.fontRenderer.drawStringWithShadow("["+i+"]"+"[X:"+villageData.posX+"][Y:"+villageData.posY+"][Z:"+villageData.posZ+"][D:"+villageData.numDoors+"][G:"+villageData.numIronGolems+"][R:"+villageData.villageRadius+"]", 10, 30+i*10, -1);
 				if(i > 12) break;//表示は12個まで
 			}
 		}
@@ -136,7 +137,7 @@ public class ClientEventHandler
 			GL11.glPushMatrix();
 
 			Tessellator tessellator = Tessellator.getInstance();
-            VertexBuffer renderer = tessellator.getBuffer();
+            BufferBuilder renderer = tessellator.getBuffer();
 
 			{//村の中心を描画
 				GL11.glDisable(GL11.GL_TEXTURE_2D);
@@ -255,11 +256,11 @@ public class ClientEventHandler
 					GL11.glEnable(GL11.GL_CULL_FACE);
 					GL11.glTranslated(-25,-85,0);
 
-					mc.fontRendererObj.drawStringWithShadow("村人の数" + village.numVillagers, 0, 10, -1);
-					mc.fontRendererObj.drawStringWithShadow("湧き時間"+village.noBreedTicks, 0, 20, -1);
-					mc.fontRendererObj.drawStringWithShadow("ドアの数"+village.numDoors, 0, 30, -1);
-					mc.fontRendererObj.drawStringWithShadow("ゴーレム"+village.numIronGolems, 0, 40, -1);
-					mc.fontRendererObj.drawStringWithShadow("村の半径"+village.villageRadius, 0, 50, -1);
+					mc.fontRenderer.drawStringWithShadow("村人の数" + village.numVillagers, 0, 10, -1);
+					mc.fontRenderer.drawStringWithShadow("湧き時間"+village.noBreedTicks, 0, 20, -1);
+					mc.fontRenderer.drawStringWithShadow("ドアの数"+village.numDoors, 0, 30, -1);
+					mc.fontRenderer.drawStringWithShadow("ゴーレム"+village.numIronGolems, 0, 40, -1);
+					mc.fontRenderer.drawStringWithShadow("村の半径"+village.villageRadius, 0, 50, -1);
 
 					renderer.setTranslation(0, 0, 0);
 

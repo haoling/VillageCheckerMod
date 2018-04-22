@@ -24,7 +24,7 @@ public class OnPacket implements IMessage, IMessageHandler<OnPacket, IMessage> {
 
     @Override
     public IMessage onMessage(OnPacket message, MessageContext ctx) {
-        EntityPlayer player = ctx.getServerHandler().playerEntity;
+        EntityPlayer player = ctx.getServerHandler().player;
 
         if(CommonProxy.enablePlayers.contains(player))
         {
